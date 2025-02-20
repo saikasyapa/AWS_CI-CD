@@ -4,18 +4,23 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 970547333335.dkr.ecr.ap-south-1.amazonaws.com/flask-eks-app:latest
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 970547333335.dkr.ecr.ap-south-1.amazonaws.com
+      - echo Updating kubeconfig...
+      - aws eks update-kubeconfig --region ap-south-1 --name flask-cluster  # Replace with your EKS cluster name
+
   build:
     commands:
       - echo Building the Docker image...
       - docker build -t flask-eks-app .
       - docker tag flask-eks-app:latest 970547333335.dkr.ecr.ap-south-1.amazonaws.com/flask-eks-app:latest
+
   post_build:
     commands:
       - echo Pushing the Docker image...
       - docker push 970547333335.dkr.ecr.ap-south-1.amazonaws.com/flask-eks-app:latest
       - echo Deploying to EKS...
       - kubectl apply -f k8s-deployment.yaml
+
 artifacts:
   files:
     - '**/*'
