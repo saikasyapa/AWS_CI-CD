@@ -3,6 +3,8 @@ version: 0.2
 phases:
   pre_build:
     commands:
+      - echo Checking IAM role inside CodeBuild...
+      - aws sts get-caller-identity
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 970547333335.dkr.ecr.ap-south-1.amazonaws.com
       - echo Updating kubeconfig...
@@ -26,4 +28,3 @@ phases:
 artifacts:
   files:
     - '**/*'
-
